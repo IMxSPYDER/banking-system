@@ -118,3 +118,6 @@ A modern, secure banking system built with React, TypeScript, and MySQL, featuri
 - Transaction verification
 - SQL injection prevention
 - Rate limiting
+
+![image](https://github.com/user-attachments/assets/ceedf9d1-e64d-4694-b91b-7b6f919772a0)
+
