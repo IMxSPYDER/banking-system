@@ -4,17 +4,21 @@ import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'enpointe-banking-system';
+
 
 // Database connection
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'pass@123',
-  database: 'banking_system',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
