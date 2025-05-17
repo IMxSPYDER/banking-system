@@ -29,7 +29,6 @@ app.use(cors({
   origin: 'https://enpointe-banking-system.netlify.app',
   credentials: true,
 }));
-app.options('*', cors());
 
 app.use(express.json());
 
