@@ -27,7 +27,7 @@ const pool = mysql.createPool({
 
 // Middleware
 app.use(cors({
-  origin: 'https://banking-system-production-f225.up.railway.app',
+  origin: 'https://enpointe-banking-system.netlify.app/',
   credentials: true,
 }));
 
