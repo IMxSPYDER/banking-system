@@ -52,17 +52,82 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-// Routes
+// // Routes
+// app.post('/register', async (req, res) => {
+//   const { firstName, lastName, age, dob, email, password, initialAmount } = req.body;
+
+//   try {
+//     const connection = await pool.getConnection();
+    
+//     try {
+//       await connection.beginTransaction();
+
+//       // Check if email exists
+//       const [existingUsers] = await connection.query(
+//         'SELECT id FROM users WHERE email = ?',
+//         [email]
+//       );
+
+//       if (existingUsers.length > 0) {
+//         throw new Error('Email already registered');
+//       }
+
+//       // Hash password
+//       const hashedPassword = await bcrypt.hash(password, 10);
+//       const userId = uuidv4();
+
+//       // Create user
+//       await connection.query(
+//         'INSERT INTO users (id, first_name, last_name, age, dob, email, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+//         [userId, firstName, lastName, parseInt(age, 10), dob, email, hashedPassword, 'customer']
+//       );
+
+//       // Create account
+//       const accountId = uuidv4();
+//       await connection.query(
+//         'INSERT INTO accounts (id, user_id, balance) VALUES (?, ?, ?)',
+//         [accountId, userId, parseFloat(initialAmount)]
+//       );
+
+//       // Create initial transaction if amount > 0
+//       if (initialAmount > 0) {
+//         await connection.query(
+//           'INSERT INTO transactions (id, account_id, type, amount) VALUES (?, ?, ?, ?)',
+//           [uuidv4(), accountId, 'deposit', parseFloat(initialAmount)]
+//         );
+//       }
+
+//       await connection.commit();
+//       res.json({ success: true });
+//     } catch (error) {
+//       await connection.rollback();
+//       throw error;
+//     } finally {
+//       connection.release();
+//     }
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// });
+
 app.post('/register', async (req, res) => {
   const { firstName, lastName, age, dob, email, password, initialAmount } = req.body;
 
+  console.log('Register request body:', req.body);
+
+  if (!firstName || !lastName || !age || !dob || !email || !password || initialAmount == null) {
+    return res.status(400).json({
+      error: 'Missing required fields',
+      details: { firstName, lastName, age, dob, email, password, initialAmount }
+    });
+  }
+
   try {
     const connection = await pool.getConnection();
-    
+
     try {
       await connection.beginTransaction();
 
-      // Check if email exists
       const [existingUsers] = await connection.query(
         'SELECT id FROM users WHERE email = ?',
         [email]
@@ -72,24 +137,20 @@ app.post('/register', async (req, res) => {
         throw new Error('Email already registered');
       }
 
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
       const userId = uuidv4();
 
-      // Create user
       await connection.query(
         'INSERT INTO users (id, first_name, last_name, age, dob, email, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [userId, firstName, lastName, parseInt(age, 10), dob, email, hashedPassword, 'customer']
       );
 
-      // Create account
       const accountId = uuidv4();
       await connection.query(
         'INSERT INTO accounts (id, user_id, balance) VALUES (?, ?, ?)',
         [accountId, userId, parseFloat(initialAmount)]
       );
 
-      // Create initial transaction if amount > 0
       if (initialAmount > 0) {
         await connection.query(
           'INSERT INTO transactions (id, account_id, type, amount) VALUES (?, ?, ?, ?)',
@@ -99,16 +160,20 @@ app.post('/register', async (req, res) => {
 
       await connection.commit();
       res.json({ success: true });
+
     } catch (error) {
       await connection.rollback();
-      throw error;
+      console.error('Transaction error:', error);
+      res.status(400).json({ error: error.message });
     } finally {
       connection.release();
     }
   } catch (error) {
+    console.error('Register error:', error);
     res.status(400).json({ error: error.message });
   }
 });
+
 
 app.post('/login', async (req, res) => {
   const { email, password, role } = req.body;
