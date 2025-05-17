@@ -108,23 +108,27 @@ const CustomerRegistration = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    try {
-      await registerCustomer(formData);
-      setIsLoading(false);
-      navigate('/customer/login', { 
-        state: { message: 'Registration successful! Please log in.' } 
-      });
-    } catch (error: any) {
-      setIsLoading(false);
-      setErrors({ 
-        general: error.message || 'Registration failed. Please try again.'
-      });
-    }
-  };
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  try {
+    // Strip confirmPassword before sending
+    const { confirmPassword, ...payloadToSend } = formData;
+
+    await registerCustomer(payloadToSend);
+    setIsLoading(false);
+    navigate('/customer/login', {
+      state: { message: 'Registration successful! Please log in.' }
+    });
+  } catch (error: any) {
+    setIsLoading(false);
+    setErrors({
+      general: error.response?.data?.error || 'Registration failed. Please try again.'
+    });
+  }
+};
+
 
   return (
     <div className="min-h-screen flex h-[100vh]">
