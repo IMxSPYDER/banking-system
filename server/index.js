@@ -51,7 +51,7 @@ const authenticateToken = async (req, res, next) => {
 };
 
 // Routes
-app.post('/api/register', async (req, res) => {
+app.post('/register', async (req, res) => {
   const { firstName, lastName, age, dob, email, password, initialAmount } = req.body;
 
   try {
@@ -108,7 +108,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
@@ -159,11 +159,11 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Protected routes
-app.use('/api/customer', authenticateToken);
-app.use('/api/banker', authenticateToken);
+app.use('/customer', authenticateToken);
+app.use('/banker', authenticateToken);
 
 // Customer routes
-app.get('/api/customer/balance', async (req, res) => {
+app.get('/customer/balance', async (req, res) => {
   try {
     const [accounts] = await pool.query(
       'SELECT balance FROM accounts WHERE user_id = ?',
@@ -180,7 +180,7 @@ app.get('/api/customer/balance', async (req, res) => {
   }
 });
 
-app.get('/api/customer/transactions', async (req, res) => {
+app.get('/customer/transactions', async (req, res) => {
   try {
     const [transactions] = await pool.query(
       `SELECT t.* FROM transactions t
@@ -196,7 +196,7 @@ app.get('/api/customer/transactions', async (req, res) => {
   }
 });
 
-app.post('/api/customer/deposit', async (req, res) => {
+app.post('/customer/deposit', async (req, res) => {
   const { amount } = req.body;
   console.log(amount)
   try {
@@ -241,7 +241,7 @@ app.post('/api/customer/deposit', async (req, res) => {
   }
 });
 
-app.post('/api/customer/withdraw', async (req, res) => {
+app.post('/customer/withdraw', async (req, res) => {
   const { amount } = req.body;
   console.log(amount)
   try {
@@ -290,7 +290,7 @@ app.post('/api/customer/withdraw', async (req, res) => {
 });
 
 // Banker routes
-app.get('/api/banker/customers', async (req, res) => {
+app.get('/banker/customers', async (req, res) => {
   if (req.user.role !== 'banker') {
     return res.status(403).json({ error: 'Access denied' });
   }
@@ -319,7 +319,7 @@ app.get('/api/banker/customers', async (req, res) => {
   }
 });
 
-app.get('/api/banker/customers/:id', async (req, res) => {
+app.get('/banker/customers/:id', async (req, res) => {
   if (req.user.role !== 'banker') {
     return res.status(403).json({ error: 'Access denied' });
   }
@@ -343,7 +343,7 @@ app.get('/api/banker/customers/:id', async (req, res) => {
   }
 });
 
-app.get('/api/banker/customers/:id/transactions', async (req, res) => {
+app.get('/banker/customers/:id/transactions', async (req, res) => {
   if (req.user.role !== 'banker') {
     return res.status(403).json({ error: 'Access denied' });
   }
