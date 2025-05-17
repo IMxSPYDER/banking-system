@@ -31,6 +31,7 @@ app.use(cors({
   credentials: true,
 }));
 
+// app.use(cors());
 app.use(express.json());
 
 // Authentication middleware
@@ -78,21 +79,21 @@ app.post('/register', async (req, res) => {
       // Create user
       await connection.query(
         'INSERT INTO users (id, first_name, last_name, age, dob, email, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [userId, firstName, lastName, age, dob, email, hashedPassword, 'customer']
+        [userId, firstName, lastName, parseInt(age, 10), dob, email, hashedPassword, 'customer']
       );
 
       // Create account
       const accountId = uuidv4();
       await connection.query(
         'INSERT INTO accounts (id, user_id, balance) VALUES (?, ?, ?)',
-        [accountId, userId, initialAmount]
+        [accountId, userId, parseFloat(initialAmount)]
       );
 
       // Create initial transaction if amount > 0
       if (initialAmount > 0) {
         await connection.query(
           'INSERT INTO transactions (id, account_id, type, amount) VALUES (?, ?, ?, ?)',
-          [uuidv4(), accountId, 'deposit', initialAmount]
+          [uuidv4(), accountId, 'deposit', parseFloat(initialAmount)]
         );
       }
 
