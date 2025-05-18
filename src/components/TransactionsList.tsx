@@ -22,8 +22,11 @@ const TransactionsList = ({ transactions }: TransactionsListProps) => {
   }
 
   const formatDate = (dateString: string) => {
-    const date = dayjs(dateString).format('DD MMM YYYY, hh:mm:ss A');;
-    return date
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   return (
