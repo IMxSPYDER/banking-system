@@ -1,4 +1,4 @@
-# SecureBank - Banking System
+# SecureBank - Banking System 
 
 A modern, secure banking system built with React, TypeScript, and MySQL, featuring customer and banker portals with real-time transaction management.
 
