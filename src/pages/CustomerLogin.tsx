@@ -43,10 +43,6 @@ const CustomerLogin = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto pt-12 pb-16 px-4">
         <div className="mb-8 text-center">
-          {/* <Link to="/" className="inline-flex items-center text-blue-800 hover:text-blue-900 mb-6">
-            <ArrowLeft size={16} className="mr-1" />
-            Back to Home
-          </Link> */}
           <div className="flex justify-center mb-4">
             <Landmark size={36} className="text-blue-800" />
           </div>
