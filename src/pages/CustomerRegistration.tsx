@@ -51,40 +51,55 @@ const CustomerRegistration = () => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors: FormErrors = {};
+const validateForm = () => {
+  const newErrors: FormErrors = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+  if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+  if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
 
-    const ageValue = parseInt(formData.age);
-    if (!formData.age || isNaN(ageValue)) newErrors.age = 'Valid age is required';
-    else if (ageValue < 18) newErrors.age = 'You must be at least 18 years old';
+  const ageValue = parseInt(formData.age);
+  if (!formData.age || isNaN(ageValue)) newErrors.age = 'Valid age is required';
+  else if (ageValue < 18) newErrors.age = 'You must be at least 18 years old';
 
-    if (!formData.dob) newErrors.dob = 'Date of birth is required';
-    else {
-      const dobDate = new Date(formData.dob);
-      const today = new Date();
-      const age = today.getFullYear() - dobDate.getFullYear();
-      if (age < 18) newErrors.dob = 'You must be at least 18 years old';
+  if (!formData.dob) {
+    newErrors.dob = 'Date of birth is required';
+  } else {
+    const dobDate = new Date(formData.dob);
+    const today = new Date();
+    let calculatedAge = today.getFullYear() - dobDate.getFullYear();
+    const m = today.getMonth() - dobDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+      calculatedAge--;
     }
 
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email))
-      newErrors.email = 'Invalid email address';
+    if (calculatedAge < 18) newErrors.dob = 'You must be at least 18 years old';
 
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    // Check if age field matches calculated age
+    if (!newErrors.age && !newErrors.dob && calculatedAge !== ageValue) {
+      newErrors.age = `Entered age (${ageValue}) does not match DOB (calculated: ${calculatedAge})`;
+    }
+  }
 
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = 'Passwords do not match';
+  if (!formData.email.trim()) newErrors.email = 'Email is required';
+  else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email))
+    newErrors.email = 'Invalid email address';
 
-    const amount = parseFloat(formData.initialAmount);
-    if (isNaN(amount) || amount < 0) newErrors.initialAmount = 'Initial amount must be a positive number';
+  if (!formData.password) newErrors.password = 'Password is required';
+  else if (formData.password.length < 6)
+    newErrors.password = 'Password must be at least 6 characters';
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  if (formData.password !== formData.confirmPassword)
+    newErrors.confirmPassword = 'Passwords do not match';
+
+  const amount = parseFloat(formData.initialAmount);
+  if (isNaN(amount) || amount < 0)
+    newErrors.initialAmount = 'Initial amount must be a positive number';
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
